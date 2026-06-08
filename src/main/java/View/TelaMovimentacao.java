@@ -125,6 +125,10 @@ public class TelaMovimentacao extends JFrame {
 
             JOptionPane.showMessageDialog(this, "Entrada registrada com sucesso!");
             
+            if (novoEstoque > pBanco.getQuantidadeMaxima()) {
+                JOptionPane.showMessageDialog(this, "Atenção! Estoque acima da quantidade máxima (" + pBanco.getQuantidadeMaxima() + ").", "Alerta de Estoque Máximo", JOptionPane.WARNING_MESSAGE);
+            }
+            
             txtQuantidade.setText("");
 
         } catch (NumberFormatException ex) {
@@ -166,6 +170,10 @@ public class TelaMovimentacao extends JFrame {
             movimentacaoDAO.atualizarEstoqueProduto(produto.getId(), novoEstoque);
 
             JOptionPane.showMessageDialog(this, "Saída registrada com sucesso!");
+            
+            if (novoEstoque < pBanco.getQuantidadeMinima()) {
+                JOptionPane.showMessageDialog(this, "Atenção! Estoque abaixo da quantidade mínima (" + pBanco.getQuantidadeMinima() + ").", "Alerta de Estoque Mínimo", JOptionPane.WARNING_MESSAGE);
+            }
             
             txtQuantidade.setText("");
 
