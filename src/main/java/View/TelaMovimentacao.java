@@ -20,7 +20,7 @@ public class TelaMovimentacao extends JFrame {
     private JComboBox<ProdutoWrapper> cbProdutos;
     private JTextField txtQuantidade;
     private JButton btnEntrada;
-
+    private JButton btnSaida;
     private JTable tabela;
     private DefaultTableModel tableModel;
 
@@ -49,9 +49,10 @@ public class TelaMovimentacao extends JFrame {
         panelForm.add(txtQuantidade);
 
         btnEntrada = new JButton("Entrada");
+        btnSaida = new JButton("Saída");
 
         panelForm.add(btnEntrada);
-
+        panelForm.add(btnSaida);
 
         add(panelForm, BorderLayout.NORTH);
 
@@ -67,6 +68,13 @@ public class TelaMovimentacao extends JFrame {
             }
         });
 
+        btnSaida.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                registrarSaida();
+                carregarTabela();
+            }
+        });
 
         cbProdutos.addActionListener(new ActionListener() {
             @Override
@@ -126,6 +134,47 @@ public class TelaMovimentacao extends JFrame {
         }
     }
 
+    private void registrarSaida() {
+        try {
+            ProdutoWrapper selecionado = (ProdutoWrapper) cbProdutos.getSelectedItem();
+            if (selecionado == null) {
+                JOptionPane.showMessageDialog(this, "Selecione um produto.");
+                return;
+            }
+
+            int qtd = Integer.parseInt(txtQuantidade.getText());
+            if (qtd <= 0) {
+                JOptionPane.showMessageDialog(this, "A quantidade deve ser maior que zero.");
+                return;
+            }
+
+            Produto produto = selecionado.getProduto();
+            
+            Produto pBanco = movimentacaoDAO.buscarProdutoPorId(produto.getId());
+            
+            if (pBanco.getQuantidadeEstoque() < qtd) {
+                JOptionPane.showMessageDialog(this, "Estoque insuficiente! Você só tem " + pBanco.getQuantidadeEstoque() + " unidades.");
+                return;
+            }
+            
+            int novoEstoque = pBanco.getQuantidadeEstoque() - qtd;
+
+            String dataAtual = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+            Movimentacao mov = new Movimentacao(0, produto.getId(), dataAtual, qtd, "SAIDA");
+            
+            movimentacaoDAO.registrar(mov);
+            movimentacaoDAO.atualizarEstoqueProduto(produto.getId(), novoEstoque);
+
+            JOptionPane.showMessageDialog(this, "Saída registrada com sucesso!");
+            
+            txtQuantidade.setText("");
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Digite uma quantidade válida.");
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Erro no banco de dados: " + ex.getMessage());
+        }
+    }
 
     private void carregarTabela() {
         tableModel.setRowCount(0);
