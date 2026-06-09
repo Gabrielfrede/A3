@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="A3ControleDeEstoque" default="jar" basedir=".">
+
+    <description>Build file for A3 - Controle de Estoque (Apache Ant)</description>
+
+    <!-- Directories -->
+    <property name="src.dir"     value="src/main/java"/>
+    <property name="build.dir"   value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir"     value="${build.dir}/jar"/>
+    <property name="lib.dir"     value="lib"/>
+
+    <!-- Application metadata -->
+    <property name="jar.name"    value="A3ControleDeEstoque.jar"/>
+    <property name="main.class"  value="Principal.Principal"/>
+
+    <!-- Classpath: includes all JARs from lib/ -->
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="*.jar" erroronmissingdir="false"/>
+    </path>
+
+    <!-- ============================================================ -->
+    <!-- clean: remove all build artifacts                            -->
+    <!-- ============================================================ -->
+    <target name="clean" description="Remove build artifacts">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <!-- ============================================================ -->
+    <!-- compile: compile all Java source files                       -->
+    <!-- ============================================================ -->
+    <target name="compile" description="Compile source files">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               encoding="ISO-8859-1"
+               includeantruntime="false"
+               debug="true">
+            <classpath refid="classpath"/>
+        </javac>
+    </target>
+
+    <!-- ============================================================ -->
+    <!-- jar: package compiled classes into an executable JAR         -->
+    <!-- ============================================================ -->
+    <target name="jar" depends="compile" description="Create executable JAR">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/${jar.name}" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+            <!-- Bundle any runtime JARs from lib/ into the output JAR -->
+            <zipgroupfileset dir="${lib.dir}" includes="*.jar" erroronmissingdir="false"/>
+        </jar>
+    </target>
+
+    <!-- ============================================================ -->
+    <!-- run: compile and launch the application                      -->
+    <!-- ============================================================ -->
+    <target name="run" depends="compile" description="Run the application">
+        <java classname="${main.class}" fork="true">
+            <classpath>
+                <pathelement path="${classes.dir}"/>
+                <fileset dir="${lib.dir}" includes="*.jar" erroronmissingdir="false"/>
+            </classpath>
+        </java>
+    </target>
+
+</project>
