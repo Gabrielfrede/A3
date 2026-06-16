@@ -29,8 +29,8 @@ public class TelaProduto extends JFrame {
 
         ImageIcon logoOriginal = new ImageIcon("src/view/logo.png");
 
-        Image logoRedimensionada =
-                logoOriginal.getImage().getScaledInstance(
+        Image logoRedimensionada
+                = logoOriginal.getImage().getScaledInstance(
                         70,
                         70,
                         Image.SCALE_SMOOTH);
@@ -47,13 +47,7 @@ public class TelaProduto extends JFrame {
 
         // SEÇÃO 1
         JLabel secao1 = new JLabel("DADOS DO PRODUTO");
-        JLabel lblId = new JLabel("ID do Produto:");
-lblId.setFont(new Font("Arial", Font.PLAIN, 13));
-lblId.setBounds(80, 45, 200, 25);
 
-JTextField txtId = new JTextField();
-txtId.setBounds(80, 65, 100, 30);
-txtId.setBackground(new Color(250, 250, 250));
         secao1.setFont(new Font("Arial", Font.BOLD, 16));
         secao1.setForeground(new Color(0, 51, 102));
         secao1.setBounds(80, 20, 250, 25);
@@ -132,174 +126,176 @@ txtId.setBackground(new Color(250, 250, 250));
         painelCentro.add(linha);
 
         // BOTÕES
-
         JButton btnSalvar = new JButton("SALVAR");
         btnSalvar.addActionListener(e -> {
-    try {
+            try {
 
-        Produto produto = new Produto();
+                Produto produto = new Produto();
 
-        produto.setNome(txtNome.getText());
+                produto.setNome(txtNome.getText());
 
-        produto.setPrecoUnitario(
-                Double.parseDouble(
-                        txtPreco.getText().replace(",", ".")
-                )
-        );
+                produto.setPrecoUnitario(
+                        Double.parseDouble(
+                                txtPreco.getText().replace(",", ".")
+                        )
+                );
 
-        produto.setUnidade("UN");
+                produto.setUnidade("UN");
 
-        produto.setQuantidadeEstoque(
-                Integer.parseInt(txtQuantidade.getText())
-        );
+                produto.setQuantidadeEstoque(
+                        Integer.parseInt(txtQuantidade.getText())
+                );
 
-        produto.setQuantidadeMinima(
-                Integer.parseInt(txtMinima.getText())
-        );
+                produto.setQuantidadeMinima(
+                        Integer.parseInt(txtMinima.getText())
+                );
 
-        produto.setQuantidadeMaxima(
-                Integer.parseInt(txtMaxima.getText())
-        );
+                produto.setQuantidadeMaxima(
+                        Integer.parseInt(txtMaxima.getText())
+                );
 
-        // Categoria fixa para teste
-        produto.setIdCategoria(1);
+                // Categoria fixa para teste
+                produto.setIdCategoria(1);
 
-        ProdutoDAO dao = new ProdutoDAO();
-        dao.salvar(produto);
+                ProdutoDAO dao = new ProdutoDAO();
+                dao.salvar(produto);
 
-        JOptionPane.showMessageDialog(
-                this,
-                "Produto cadastrado com sucesso!"
-        );
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Produto cadastrado com sucesso!"
+                );
 
-    } catch (Exception ex) {
+            } catch (Exception ex) {
 
-        JOptionPane.showMessageDialog(
-                this,
-                "Erro ao salvar: " + ex.getMessage()
-        );
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Erro ao salvar: " + ex.getMessage()
+                );
 
-        ex.printStackTrace();
-    }
-});
-       JButton btnEditar = new JButton("EDITAR");
-       JButton btnExcluir = new JButton("EXCLUIR");
-       JButton btnLimpar = new JButton("LIMPAR");
+                ex.printStackTrace();
+            }
+        });
+        JButton btnEditar = new JButton("EDITAR");
+        JButton btnExcluir = new JButton("EXCLUIR");
+        JButton btnLimpar = new JButton("LIMPAR");
 
-btnLimpar.addActionListener(e -> {
-    txtNome.setText("");
-    txtPreco.setText("");
-    txtQuantidade.setText("");
-    txtMinima.setText("");
-    txtMaxima.setText("");
-    cbCategoria.setSelectedIndex(0);
-    txtNome.requestFocus();
-});
+        btnLimpar.addActionListener(e -> {
+            txtNome.setText("");
+            txtPreco.setText("");
+            txtQuantidade.setText("");
+            txtMinima.setText("");
+            txtMaxima.setText("");
+            cbCategoria.setSelectedIndex(0);
+            txtNome.requestFocus();
+        });
 
-btnEditar.addActionListener(e -> {
-    try {
+        btnEditar.addActionListener(e -> {
+            try {
+                ProdutoDAO dao = new ProdutoDAO();
+                java.util.List<Produto> produtos = dao.listarTodos();
 
-        if (txtId.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Informe o ID do produto.");
-            return;
-        }
+                if (produtos.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Nenhum produto cadastrado.");
+                    return;
+                }
 
-        Produto produto = new Produto();
+                String[] opcoes = new String[produtos.size()];
 
-        produto.setId(
-                Integer.parseInt(txtId.getText())
-        );
+                for (int i = 0; i < produtos.size(); i++) {
+                    opcoes[i] = produtos.get(i).getId() + " - " + produtos.get(i).getNome();
+                }
 
-        produto.setNome(txtNome.getText());
+                String selecionado = (String) JOptionPane.showInputDialog(
+                        this,
+                        "Selecione o produto que deseja editar:",
+                        "Editar Produto",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        opcoes,
+                        opcoes[0]
+                );
 
-        produto.setPrecoUnitario(
-                Double.parseDouble(
-                        txtPreco.getText().replace(",", ".")
-                )
-        );
+                if (selecionado == null) {
+                    return;
+                }
 
-        produto.setUnidade("UN");
+                int id = Integer.parseInt(selecionado.split(" - ")[0]);
 
-        produto.setQuantidadeEstoque(
-                Integer.parseInt(txtQuantidade.getText())
-        );
+                Produto produto = new Produto();
 
-        produto.setQuantidadeMinima(
-                Integer.parseInt(txtMinima.getText())
-        );
+                produto.setId(id);
+                produto.setNome(txtNome.getText());
+                produto.setPrecoUnitario(Double.parseDouble(txtPreco.getText().replace(",", ".")));
+                produto.setUnidade("UN");
+                produto.setQuantidadeEstoque(Integer.parseInt(txtQuantidade.getText()));
+                produto.setQuantidadeMinima(Integer.parseInt(txtMinima.getText()));
+                produto.setQuantidadeMaxima(Integer.parseInt(txtMaxima.getText()));
+                produto.setIdCategoria(1);
 
-        produto.setQuantidadeMaxima(
-                Integer.parseInt(txtMaxima.getText())
-        );
+                dao.atualizar(produto);
 
-        produto.setIdCategoria(1);
+                JOptionPane.showMessageDialog(this, "Produto editado com sucesso!");
 
-        ProdutoDAO dao = new ProdutoDAO();
-        dao.atualizar(produto);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao editar: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        });
 
-        JOptionPane.showMessageDialog(
-                this,
-                "Produto atualizado com sucesso!"
-        );
+        btnExcluir.addActionListener(e -> {
+            try {
+                ProdutoDAO dao = new ProdutoDAO();
+                java.util.List<Produto> produtos = dao.listarTodos();
 
-    } catch (Exception ex) {
+                if (produtos.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Nenhum produto cadastrado.");
+                    return;
+                }
 
-        JOptionPane.showMessageDialog(
-                this,
-                "Erro ao editar: " + ex.getMessage()
-        );
+                String[] opcoes = new String[produtos.size()];
 
-        ex.printStackTrace();
-    }
-});;
+                for (int i = 0; i < produtos.size(); i++) {
+                    opcoes[i] = produtos.get(i).getId() + " - " + produtos.get(i).getNome();
+                }
 
-btnExcluir.addActionListener(e -> {
-    try {
+                String selecionado = (String) JOptionPane.showInputDialog(
+                        this,
+                        "Selecione o produto que deseja excluir:",
+                        "Excluir Produto",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        opcoes,
+                        opcoes[0]
+                );
 
-        if (txtId.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Informe o ID do produto.");
-            return;
-        }
+                if (selecionado == null) {
+                    return;
+                }
 
-        int resposta = JOptionPane.showConfirmDialog(
-                this,
-                "Deseja realmente excluir o produto?",
-                "Confirmação",
-                JOptionPane.YES_NO_OPTION
-        );
+                int resposta = JOptionPane.showConfirmDialog(
+                        this,
+                        "Deseja realmente excluir " + selecionado + "?",
+                        "Confirmar Exclusão",
+                        JOptionPane.YES_NO_OPTION
+                );
 
-        if (resposta == JOptionPane.YES_OPTION) {
+                if (resposta == JOptionPane.YES_OPTION) {
+                    int id = Integer.parseInt(selecionado.split(" - ")[0]);
+                    dao.excluir(id);
 
-            ProdutoDAO dao = new ProdutoDAO();
+                    JOptionPane.showMessageDialog(this, "Produto excluído com sucesso!");
+                }
 
-            dao.excluir(
-                    Integer.parseInt(txtId.getText())
-            );
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Produto excluído com sucesso!"
-            );
-        }
-
-    } catch (Exception ex) {
-
-        JOptionPane.showMessageDialog(
-                this,
-                "Erro ao excluir: " + ex.getMessage()
-        );
-
-        ex.printStackTrace();
-    }
-});
-
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao excluir: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        });
         JButton[] botoes = {
-                btnSalvar,
-                btnEditar,
-                btnExcluir,
-                btnLimpar
+            btnSalvar,
+            btnEditar,
+            btnExcluir,
+            btnLimpar
         };
 
         int x = 70;
@@ -319,7 +315,6 @@ btnExcluir.addActionListener(e -> {
         }
 
         // ADICIONANDO COMPONENTES
-
         painelCentro.add(secao1);
 
         painelCentro.add(lblNome);
@@ -341,9 +336,6 @@ btnExcluir.addActionListener(e -> {
 
         painelCentro.add(lblMaxima);
         painelCentro.add(txtMaxima);
-        
-        painelCentro.add(lblId);
-        painelCentro.add(txtId);
 
         // RODAPÉ
         JLabel rodape = new JLabel(
