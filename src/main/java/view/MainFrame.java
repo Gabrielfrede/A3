@@ -106,7 +106,7 @@ public class MainFrame extends JFrame {
         centro.setLayout(null);
 
         ImageIcon logoOriginal =
-                new ImageIcon("src/view/logo.png");
+        new ImageIcon("src/main/java/view/logo.png");
 
         Image logoRedimensionada =
                 logoOriginal.getImage().getScaledInstance(
