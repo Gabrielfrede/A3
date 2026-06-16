@@ -14,8 +14,7 @@ public class MovimentacaoDAO {
     public void registrar(Movimentacao mov) throws SQLException {
         String sql = "INSERT INTO movimentacao (produto_id, data_movimentacao, quantidade, tipo_movimentacao) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = ConexaoBanco.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexaoBanco.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, mov.getProdutoId());
             stmt.setDate(2, java.sql.Date.valueOf(mov.getDataMovimentacao()));
@@ -29,8 +28,7 @@ public class MovimentacaoDAO {
     public void atualizarEstoqueProduto(int produtoId, int novaQuantidade) throws SQLException {
         String sql = "UPDATE produto SET quantidade_estoque = ? WHERE id = ?";
 
-        try (Connection conn = ConexaoBanco.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexaoBanco.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, novaQuantidade);
             stmt.setInt(2, produtoId);
@@ -43,11 +41,10 @@ public class MovimentacaoDAO {
         String sql = "SELECT * FROM produto WHERE id = ?";
         Produto p = null;
 
-        try (Connection conn = ConexaoBanco.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+        try (Connection conn = ConexaoBanco.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, produtoId);
-            
+
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     p = new Produto(
@@ -58,7 +55,7 @@ public class MovimentacaoDAO {
                             rs.getInt("quantidade_estoque"),
                             rs.getInt("quantidade_minima"),
                             rs.getInt("quantidade_maxima"),
-                            rs.getInt("id_categoria")
+                            rs.getInt("categoria_id")
                     );
                 }
             }
@@ -70,9 +67,7 @@ public class MovimentacaoDAO {
         String sql = "SELECT * FROM movimentacao ORDER BY id DESC";
         java.util.List<Movimentacao> lista = new java.util.ArrayList<>();
 
-        try (Connection conn = ConexaoBanco.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = ConexaoBanco.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 Movimentacao m = new Movimentacao(
@@ -92,8 +87,7 @@ public class MovimentacaoDAO {
         String sql = "SELECT * FROM movimentacao WHERE produto_id = ? ORDER BY id DESC";
         java.util.List<Movimentacao> lista = new java.util.ArrayList<>();
 
-        try (Connection conn = ConexaoBanco.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexaoBanco.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, produtoId);
 
@@ -111,5 +105,19 @@ public class MovimentacaoDAO {
             }
         }
         return lista;
+    }
+
+    public int contarMovimentacoes() throws SQLException {
+
+        String sql = "SELECT COUNT(*) FROM movimentacao";
+
+        try (Connection conn = ConexaoBanco.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+
+        return 0;
     }
 }

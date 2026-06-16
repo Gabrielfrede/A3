@@ -10,7 +10,7 @@ public class ProdutoDAO {
 
     // Método para Inserir no Banco (Create)
     public void salvar(Produto produto) throws SQLException {
-        String sql = "INSERT INTO produto (nome, preco_unitario, unidade, quantidade_estoque, quantidade_minima, quantidade_maxima, id_categoria) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO produto (nome, preco_unitario, unidade, quantidade_estoque, quantidade_minima, quantidade_maxima,categoria_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         // Abre a conexão automaticamente usando a classe padrão do projeto (substitua 'ConexaoBanco' pelo nome correto do seu projeto base)
         try (Connection conn = ConexaoBanco.getConnection();
@@ -46,7 +46,7 @@ public class ProdutoDAO {
                         rs.getInt("quantidade_estoque"),
                         rs.getInt("quantidade_minima"),
                         rs.getInt("quantidade_maxima"),
-                        rs.getInt("id_categoria")
+                        rs.getInt("categoria_id")
                 );
                 lista.add(p);
             }
@@ -56,7 +56,7 @@ public class ProdutoDAO {
 
     // Método para Alterar dados (Update)
     public void atualizar(Produto produto) throws SQLException {
-        String sql = "UPDATE produto SET nome=?, preco_unitario=?, unidade=?, quantidade_estoque=?, quantidade_minima=?, quantidade_maxima=?, id_categoria=? WHERE id=?";
+        String sql = "UPDATE produto SET nome=?, preco_unitario=?, unidade=?, quantidade_estoque=?, quantidade_minima=?, quantidade_maxima=?, categoria_id=? WHERE id=?";
 
         try (Connection conn = ConexaoBanco.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -94,4 +94,19 @@ public class ProdutoDAO {
             stmt.executeUpdate();
         }
     }
+    public int contarProdutos() throws SQLException {
+
+    String sql = "SELECT COUNT(*) FROM produto";
+
+    try (Connection conn = ConexaoBanco.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+    }
+
+    return 0;
+}
 }

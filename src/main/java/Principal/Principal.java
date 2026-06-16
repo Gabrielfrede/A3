@@ -1,6 +1,6 @@
 package Principal;
 
-import View.TelaPrincipal;
+import view.MainFrame;
 import java.sql.Connection;
 import util.ConexaoBanco;
 
@@ -23,7 +23,7 @@ public class Principal {
             e.printStackTrace();
         }
 
-        TelaPrincipal objetotela = new TelaPrincipal();
+        MainFrame objetotela = new MainFrame();
         objetotela.setVisible(true);
     }
 }

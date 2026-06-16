@@ -2,6 +2,15 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
+import dao.ProdutoDAO;
+import dao.CategoriaDAO;
+import dao.MovimentacaoDAO;
+
+import model.Produto;
+import model.Categoria;
+import model.Movimentacao;
+
+import java.util.List;
 
 public class TelaRelatorio extends JFrame {
 
@@ -16,13 +25,12 @@ public class TelaRelatorio extends JFrame {
         JPanel painelPrincipal = new JPanel(new BorderLayout());
 
         // CABEÇALHO
-
         JPanel painelTopo = new JPanel(new BorderLayout());
         painelTopo.setBackground(new Color(0, 51, 102));
         painelTopo.setPreferredSize(new Dimension(900, 80));
 
-        JLabel titulo =
-                new JLabel("CENTRAL DE RELATÓRIOS");
+        JLabel titulo
+                = new JLabel("CENTRAL DE RELATÓRIOS");
 
         titulo.setForeground(Color.WHITE);
         titulo.setFont(new Font("Arial", Font.BOLD, 24));
@@ -33,29 +41,28 @@ public class TelaRelatorio extends JFrame {
                         0,
                         0));
 
-        ImageIcon logoOriginal =
-                new ImageIcon("src/imagens/logo.png");
+        ImageIcon logoOriginal
+                = new ImageIcon("src/view/logo.png");
 
-        Image logoRedimensionada =
-                logoOriginal.getImage().getScaledInstance(
+        Image logoRedimensionada
+                = logoOriginal.getImage().getScaledInstance(
                         70,
                         70,
                         Image.SCALE_SMOOTH);
 
-        JLabel logo =
-                new JLabel(new ImageIcon(logoRedimensionada));
+        JLabel logo
+                = new JLabel(new ImageIcon(logoRedimensionada));
 
         painelTopo.add(titulo, BorderLayout.WEST);
         painelTopo.add(logo, BorderLayout.EAST);
 
         // CENTRO
-
         JPanel painelCentro = new JPanel();
         painelCentro.setLayout(null);
         painelCentro.setBackground(new Color(245, 245, 245));
 
-        JLabel secao =
-                new JLabel("PAINEL GERENCIAL");
+        JLabel secao
+                = new JLabel("PAINEL GERENCIAL");
 
         secao.setFont(
                 new Font("Arial",
@@ -71,8 +78,8 @@ public class TelaRelatorio extends JFrame {
                 300,
                 25);
 
-        JLabel subtitulo =
-                new JLabel(
+        JLabel subtitulo
+                = new JLabel(
                         "Visualize informações importantes do sistema.");
 
         subtitulo.setBounds(
@@ -83,11 +90,33 @@ public class TelaRelatorio extends JFrame {
 
         subtitulo.setForeground(Color.GRAY);
 
+        int totalProdutos = 0;
+        int totalCategorias = 0;
+        int totalMovimentacoes = 0;
+
+        try {
+
+            ProdutoDAO produtoDAO = new ProdutoDAO();
+            CategoriaDAO categoriaDAO = new CategoriaDAO();
+            MovimentacaoDAO movimentacaoDAO = new MovimentacaoDAO();
+
+            totalProdutos = produtoDAO.contarProdutos();
+            totalCategorias = categoriaDAO.contarCategorias();
+            totalMovimentacoes = movimentacaoDAO.contarMovimentacoes();
+
+        } catch (Exception ex) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Erro ao carregar indicadores: "
+                    + ex.getMessage()
+            );
+        }
         // CARDS
 
         JPanel cardProdutos = criarCard(
-                "PRODUTOS",
-                "25");
+        "PRODUTOS",
+        String.valueOf(totalProdutos));
 
         cardProdutos.setBounds(
                 80,
@@ -96,8 +125,8 @@ public class TelaRelatorio extends JFrame {
                 100);
 
         JPanel cardCategorias = criarCard(
-                "CATEGORIAS",
-                "4");
+        "CATEGORIAS",
+        String.valueOf(totalCategorias));
 
         cardCategorias.setBounds(
                 270,
@@ -106,8 +135,8 @@ public class TelaRelatorio extends JFrame {
                 100);
 
         JPanel cardMovimentacoes = criarCard(
-                "MOVIMENTAÇÕES",
-                "120");
+        "MOVIMENTAÇÕES",
+        String.valueOf(totalMovimentacoes));
 
         cardMovimentacoes.setBounds(
                 460,
@@ -126,24 +155,23 @@ public class TelaRelatorio extends JFrame {
                 100);
 
         // BOTÕES
+        JButton btnProdutos
+                = new JButton("RELATÓRIO PRODUTOS");
 
-        JButton btnProdutos =
-                new JButton("RELATÓRIO PRODUTOS");
+        JButton btnCategorias
+                = new JButton("RELATÓRIO CATEGORIAS");
 
-        JButton btnCategorias =
-                new JButton("RELATÓRIO CATEGORIAS");
+        JButton btnEstoque
+                = new JButton("RELATÓRIO ESTOQUE");
 
-        JButton btnEstoque =
-                new JButton("RELATÓRIO ESTOQUE");
-
-        JButton btnMovimentacoes =
-                new JButton("RELATÓRIO MOVIMENTAÇÕES");
+        JButton btnMovimentacoes
+                = new JButton("RELATÓRIO MOVIMENTAÇÕES");
 
         JButton[] botoes = {
-                btnProdutos,
-                btnCategorias,
-                btnEstoque,
-                btnMovimentacoes
+            btnProdutos,
+            btnCategorias,
+            btnEstoque,
+            btnMovimentacoes
         };
 
         int y = 240;
@@ -176,8 +204,8 @@ public class TelaRelatorio extends JFrame {
             y += 60;
         }
 
-        JTextArea areaRelatorio =
-                new JTextArea();
+        JTextArea areaRelatorio
+                = new JTextArea();
 
         areaRelatorio.setEditable(false);
 
@@ -186,8 +214,8 @@ public class TelaRelatorio extends JFrame {
                         Font.PLAIN,
                         14));
 
-        JScrollPane scroll =
-                new JScrollPane(areaRelatorio);
+        JScrollPane scroll
+                = new JScrollPane(areaRelatorio);
 
         scroll.setBounds(
                 400,
@@ -196,64 +224,101 @@ public class TelaRelatorio extends JFrame {
                 260);
 
         // EVENTOS
+       btnProdutos.addActionListener(e -> {
+    try {
+        ProdutoDAO dao = new ProdutoDAO();
+        List<Produto> produtos = dao.listarTodos();
 
-        btnProdutos.addActionListener(e -> {
+        StringBuilder sb = new StringBuilder();
+        sb.append("RELATÓRIO DE PRODUTOS\n\n");
 
-            areaRelatorio.setText(
-                    """
-                    RELATÓRIO DE PRODUTOS
-                    
-                    - Arroz 5kg
-                    - Feijão 1kg
-                    - Coca-Cola 2L
-                    - Detergente
-                    - Sabonete
-                    """
-            );
-        });
+        for (Produto p : produtos) {
+            sb.append("ID: ").append(p.getId())
+              .append(" | Nome: ").append(p.getNome())
+              .append(" | Preço: R$ ").append(p.getPrecoUnitario())
+              .append(" | Estoque: ").append(p.getQuantidadeEstoque())
+              .append("\n");
+        }
+
+        areaRelatorio.setText(sb.toString());
+
+    } catch (Exception ex) {
+        areaRelatorio.setText("Erro ao gerar relatório de produtos: " + ex.getMessage());
+    }
+});
 
         btnCategorias.addActionListener(e -> {
+    try {
+        CategoriaDAO dao = new CategoriaDAO();
+        List<Categoria> categorias = dao.listarTodas();
 
-            areaRelatorio.setText(
-                    """
-                    RELATÓRIO DE CATEGORIAS
-                    
-                    - Alimentos
-                    - Bebidas
-                    - Limpeza
-                    - Higiene
-                    """
-            );
-        });
+        StringBuilder sb = new StringBuilder();
+        sb.append("RELATÓRIO DE CATEGORIAS\n\n");
 
+        for (Categoria c : categorias) {
+            sb.append("ID: ").append(c.getId())
+              .append(" | Nome: ").append(c.getNome())
+              .append(" | Tamanho: ").append(c.getTamanho())
+              .append(" | Embalagem: ").append(c.getEmbalagem())
+              .append("\n");
+        }
+
+        areaRelatorio.setText(sb.toString());
+
+    } catch (Exception ex) {
+        areaRelatorio.setText("Erro ao gerar relatório de categorias: " + ex.getMessage());
+    }
+});
         btnEstoque.addActionListener(e -> {
+    try {
+        ProdutoDAO dao = new ProdutoDAO();
+        List<Produto> produtos = dao.listarTodos();
 
-            areaRelatorio.setText(
-                    """
-                    PRODUTOS COM ESTOQUE BAIXO
-                    
-                    - Sabonete
-                    - Feijão 1kg
-                    - Detergente
-                    """
-            );
-        });
+        StringBuilder sb = new StringBuilder();
+        sb.append("PRODUTOS COM ESTOQUE BAIXO\n\n");
+
+        for (Produto p : produtos) {
+            if (p.getQuantidadeEstoque() <= p.getQuantidadeMinima()) {
+                sb.append("ID: ").append(p.getId())
+                  .append(" | Nome: ").append(p.getNome())
+                  .append(" | Estoque: ").append(p.getQuantidadeEstoque())
+                  .append(" | Mínimo: ").append(p.getQuantidadeMinima())
+                  .append("\n");
+            }
+        }
+
+        areaRelatorio.setText(sb.toString());
+
+    } catch (Exception ex) {
+        areaRelatorio.setText("Erro ao gerar relatório de estoque: " + ex.getMessage());
+    }
+});
 
         btnMovimentacoes.addActionListener(e -> {
+    try {
+        MovimentacaoDAO dao = new MovimentacaoDAO();
+        List<Movimentacao> movimentacoes = dao.listarTodas();
 
-            areaRelatorio.setText(
-                    """
-                    ÚLTIMAS MOVIMENTAÇÕES
-                    
-                    Entrada: Coca-Cola 2L
-                    Entrada: Arroz 5kg
-                    Saída: Feijão 1kg
-                    """
-            );
-        });
+        StringBuilder sb = new StringBuilder();
+        sb.append("RELATÓRIO DE MOVIMENTAÇÕES\n\n");
+
+        for (Movimentacao m : movimentacoes) {
+            sb.append("ID: ").append(m.getId())
+              .append(" | Produto ID: ").append(m.getProdutoId())
+              .append(" | Tipo: ").append(m.getTipoMovimentacao())
+              .append(" | Quantidade: ").append(m.getQuantidade())
+              .append(" | Data: ").append(m.getDataMovimentacao())
+              .append("\n");
+        }
+
+        areaRelatorio.setText(sb.toString());
+
+    } catch (Exception ex) {
+        areaRelatorio.setText("Erro ao gerar relatório de movimentações: " + ex.getMessage());
+    }
+});
 
         // COMPONENTES
-
         painelCentro.add(secao);
         painelCentro.add(subtitulo);
 
@@ -265,9 +330,8 @@ public class TelaRelatorio extends JFrame {
         painelCentro.add(scroll);
 
         // RODAPÉ
-
-        JLabel rodape =
-                new JLabel(
+        JLabel rodape
+                = new JLabel(
                         "Mercado do Jorge © 2026 | Central de Relatórios",
                         SwingConstants.CENTER);
 
@@ -310,8 +374,8 @@ public class TelaRelatorio extends JFrame {
                         new Color(0, 51, 102),
                         2));
 
-        JLabel lblTitulo =
-                new JLabel(
+        JLabel lblTitulo
+                = new JLabel(
                         titulo,
                         SwingConstants.CENTER);
 
@@ -320,8 +384,8 @@ public class TelaRelatorio extends JFrame {
                         Font.BOLD,
                         14));
 
-        JLabel lblValor =
-                new JLabel(
+        JLabel lblValor
+                = new JLabel(
                         valor,
                         SwingConstants.CENTER);
 

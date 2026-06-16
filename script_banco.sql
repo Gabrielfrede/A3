@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS produto (
     quantidade_estoque INT NOT NULL DEFAULT 0,
     quantidade_minima INT NOT NULL DEFAULT 0,
     quantidade_maxima INT NOT NULL DEFAULT 0,
-    id_categoria INT NOT NULL
+    categoria_id INT NOT NULL
 );
 
 -- Tabela de Movimentações

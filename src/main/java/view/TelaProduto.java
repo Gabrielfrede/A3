@@ -1,7 +1,9 @@
 package view;
 
+import dao.ProdutoDAO;
 import javax.swing.*;
 import java.awt.*;
+import model.Produto;
 
 public class TelaProduto extends JFrame {
 
@@ -25,7 +27,7 @@ public class TelaProduto extends JFrame {
         titulo.setFont(new Font("Arial", Font.BOLD, 24));
         titulo.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 
-        ImageIcon logoOriginal = new ImageIcon("src/imagens/logo.png");
+        ImageIcon logoOriginal = new ImageIcon("src/view/logo.png");
 
         Image logoRedimensionada =
                 logoOriginal.getImage().getScaledInstance(
@@ -45,6 +47,13 @@ public class TelaProduto extends JFrame {
 
         // SEÇÃO 1
         JLabel secao1 = new JLabel("DADOS DO PRODUTO");
+        JLabel lblId = new JLabel("ID do Produto:");
+lblId.setFont(new Font("Arial", Font.PLAIN, 13));
+lblId.setBounds(80, 45, 200, 25);
+
+JTextField txtId = new JTextField();
+txtId.setBounds(80, 65, 100, 30);
+txtId.setBackground(new Color(250, 250, 250));
         secao1.setFont(new Font("Arial", Font.BOLD, 16));
         secao1.setForeground(new Color(0, 51, 102));
         secao1.setBounds(80, 20, 250, 25);
@@ -125,9 +134,166 @@ public class TelaProduto extends JFrame {
         // BOTÕES
 
         JButton btnSalvar = new JButton("SALVAR");
-        JButton btnEditar = new JButton("EDITAR");
-        JButton btnExcluir = new JButton("EXCLUIR");
-        JButton btnLimpar = new JButton("LIMPAR");
+        btnSalvar.addActionListener(e -> {
+    try {
+
+        Produto produto = new Produto();
+
+        produto.setNome(txtNome.getText());
+
+        produto.setPrecoUnitario(
+                Double.parseDouble(
+                        txtPreco.getText().replace(",", ".")
+                )
+        );
+
+        produto.setUnidade("UN");
+
+        produto.setQuantidadeEstoque(
+                Integer.parseInt(txtQuantidade.getText())
+        );
+
+        produto.setQuantidadeMinima(
+                Integer.parseInt(txtMinima.getText())
+        );
+
+        produto.setQuantidadeMaxima(
+                Integer.parseInt(txtMaxima.getText())
+        );
+
+        // Categoria fixa para teste
+        produto.setIdCategoria(1);
+
+        ProdutoDAO dao = new ProdutoDAO();
+        dao.salvar(produto);
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Produto cadastrado com sucesso!"
+        );
+
+    } catch (Exception ex) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Erro ao salvar: " + ex.getMessage()
+        );
+
+        ex.printStackTrace();
+    }
+});
+       JButton btnEditar = new JButton("EDITAR");
+       JButton btnExcluir = new JButton("EXCLUIR");
+       JButton btnLimpar = new JButton("LIMPAR");
+
+btnLimpar.addActionListener(e -> {
+    txtNome.setText("");
+    txtPreco.setText("");
+    txtQuantidade.setText("");
+    txtMinima.setText("");
+    txtMaxima.setText("");
+    cbCategoria.setSelectedIndex(0);
+    txtNome.requestFocus();
+});
+
+btnEditar.addActionListener(e -> {
+    try {
+
+        if (txtId.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Informe o ID do produto.");
+            return;
+        }
+
+        Produto produto = new Produto();
+
+        produto.setId(
+                Integer.parseInt(txtId.getText())
+        );
+
+        produto.setNome(txtNome.getText());
+
+        produto.setPrecoUnitario(
+                Double.parseDouble(
+                        txtPreco.getText().replace(",", ".")
+                )
+        );
+
+        produto.setUnidade("UN");
+
+        produto.setQuantidadeEstoque(
+                Integer.parseInt(txtQuantidade.getText())
+        );
+
+        produto.setQuantidadeMinima(
+                Integer.parseInt(txtMinima.getText())
+        );
+
+        produto.setQuantidadeMaxima(
+                Integer.parseInt(txtMaxima.getText())
+        );
+
+        produto.setIdCategoria(1);
+
+        ProdutoDAO dao = new ProdutoDAO();
+        dao.atualizar(produto);
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Produto atualizado com sucesso!"
+        );
+
+    } catch (Exception ex) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Erro ao editar: " + ex.getMessage()
+        );
+
+        ex.printStackTrace();
+    }
+});;
+
+btnExcluir.addActionListener(e -> {
+    try {
+
+        if (txtId.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Informe o ID do produto.");
+            return;
+        }
+
+        int resposta = JOptionPane.showConfirmDialog(
+                this,
+                "Deseja realmente excluir o produto?",
+                "Confirmação",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (resposta == JOptionPane.YES_OPTION) {
+
+            ProdutoDAO dao = new ProdutoDAO();
+
+            dao.excluir(
+                    Integer.parseInt(txtId.getText())
+            );
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Produto excluído com sucesso!"
+            );
+        }
+
+    } catch (Exception ex) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Erro ao excluir: " + ex.getMessage()
+        );
+
+        ex.printStackTrace();
+    }
+});
 
         JButton[] botoes = {
                 btnSalvar,
@@ -175,6 +341,9 @@ public class TelaProduto extends JFrame {
 
         painelCentro.add(lblMaxima);
         painelCentro.add(txtMaxima);
+        
+        painelCentro.add(lblId);
+        painelCentro.add(txtId);
 
         // RODAPÉ
         JLabel rodape = new JLabel(
